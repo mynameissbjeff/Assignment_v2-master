@@ -12,9 +12,12 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+import javax.xml.transform.Result;
+
 public class PracticeActivity extends AppCompatActivity {
 
     private static final int REQUEST_MAIN_MENU = 1;
+    private static final int REQUEST_RESULT = 1;
 
     public TextView textViewNum;
     public  TextView textViewQuestion;
@@ -124,7 +127,14 @@ public class PracticeActivity extends AppCompatActivity {
             CreateQuestion();
         }
         else if(countNum >= 12){
-            Toast.makeText(this, "Total Correct " + TotalCorrect +" in " + " 12 Question", Toast.LENGTH_SHORT).show();
+            String i= Integer.toString(TotalCorrect);
+            String type = "practice";
+            Bundle bundle = new Bundle();
+            bundle.putString("result", i);
+            bundle.putString("layout", type);
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtras(bundle);
+            startActivityForResult(intent, REQUEST_RESULT);
             finish();
         }
 

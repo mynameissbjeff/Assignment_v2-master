@@ -8,11 +8,11 @@
 
     <!-- Not using just create space between view -->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textViewTimer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Question"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold" />
 

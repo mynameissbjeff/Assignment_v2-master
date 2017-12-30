@@ -2,15 +2,17 @@ package my.edu.taruc.lab22profile;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
 import java.util.Random;
 
 
@@ -18,20 +20,31 @@ import java.util.Random;
 public class ChallengeActivity extends AppCompatActivity {
 
     private static final int REQUEST_MAIN_MENU = 1;
+    private static final int REQUEST_RESULT = 1;
+
+    private LinearLayout player1layout;
+    private LinearLayout player2layout;
 
     public  TextView textViewQuestions;
     public TextView textViewNums;
+    public TextView textViewTimer;
+    public TextView textViewAnswer1;
+    public TextView textViewAnswer2;
 
     public ImageButton imageButtonTrue1;
     public ImageButton imageButtonFalse1;
     public ImageButton imageButtonTrue2;
     public ImageButton imageButtonFalse2;
 
+    public int counter;
+
     public int countNum = 1;
     public int TotalCorrect1=0;
     public int TotalCorrect2=0;
     public boolean givenAns;
-    public boolean aldans1=false,aldans2=false;
+    public boolean haveanswer1 =false, haveanswer2 =false;
+
+    public CountDownTimer counttimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +52,37 @@ public class ChallengeActivity extends AppCompatActivity {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_challenge);
 
+        player1layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer1);
+        player2layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer2);
+
         textViewNums = (TextView)findViewById(R.id.textViewNums);
         textViewQuestions = (TextView)findViewById(R.id.textViewQuestions);
-        textViewQuestions.setText("lol");
-        textViewNums.setText("" + countNum + "/12");
+        textViewTimer = (TextView)findViewById(R.id.textViewTimer);
+        textViewNums.setText("Question " + countNum + "/12");
         CreateQuestions();
     }
 
     void CreateQuestions(){
-        aldans1=false;
-        aldans2=false;
+        player1layout.setBackgroundColor(getResources().getColor(R.color.lightpink));
+        player2layout.setBackgroundColor(getResources().getColor(R.color.lightpink));
+        counter = 10;
+        counttimer = new CountDownTimer(11000, 1000){
+            public void onTick(long millisUntilFinished){
+                textViewTimer.setText(String.valueOf("Time Left: "+ counter));
+                counter--;
+                haveAnswerCheck();
+            }
+            public void onFinish(){
+                textViewTimer.setText("Times Up!!");
+                haveanswer1=true;
+                haveanswer2=true;
+                haveAnswerCheck();
+
+            }
+        };
+        counttimer.start();
+        haveanswer1 =false;
+        haveanswer2 =false;
         int min = 1;
         int min2 = 0;
         int max = 15;
@@ -62,47 +96,36 @@ public class ChallengeActivity extends AppCompatActivity {
 
     public void buttonAnss(View view){
         checkAnss(view);
-        if(countNum<12){
-            if(aldans1==true&&aldans2==true) {
-                countNum++;
-                textViewNums.setText("" + countNum + "/12");
-                CreateQuestions();
-            }
-        }
-        else if(countNum >= 12&&aldans1==true&&aldans2==true){
-            Toast.makeText(this, "Player1 " + TotalCorrect1 + " " + "Player2 " + TotalCorrect2, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
+        haveAnswerCheck();
     }
 
     public void checkAnss(View view){
-        if(aldans1==false){
+        if(haveanswer1 ==false){
             if (view.getId() == R.id.imageButtonTrue1){
                 if(givenAns == true) {
                     TotalCorrect1++;
                 }
-                aldans1=true;
+                haveanswer1 =true;
             }
             else if (view.getId() == R.id.imageButtonFalse1){
                 if(givenAns == false) {
                     TotalCorrect1++;
                 }
-                aldans1=true;
+                haveanswer1 =true;
             }
         }
-        if(aldans2==false){
+        if(haveanswer2 ==false){
             if (view.getId() == R.id.imageButtonTrue2){
                 if(givenAns == true) {
                     TotalCorrect2++;
                 }
-                aldans2 = true;
+                haveanswer2 = true;
             }
             else if (view.getId() == R.id.imageButtonFalse2) {
                 if (givenAns == false) {
                     TotalCorrect2++;
                 }
-                aldans2 = true;
+                haveanswer2 = true;
             }
         }
     }
@@ -145,5 +168,37 @@ public class ChallengeActivity extends AppCompatActivity {
         Random r = new Random();
         float randans = r.nextInt(max - min + 1) + min;
         return randans;
+    }
+
+    public void haveAnswerCheck(){
+        if(haveanswer1 == true){
+            player1layout.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+        }
+        if(haveanswer2 == true){
+            player2layout.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+        }
+        if(countNum<12){
+            if(haveanswer1 ==true&& haveanswer2 ==true) {
+                counttimer.cancel();
+                countNum++;
+                textViewNums.setText("" + countNum + "/12");
+                CreateQuestions();
+            }
+        }
+        else if(countNum >= 12&& haveanswer1 ==true&& haveanswer2 ==true){
+            counttimer.cancel();
+            //Toast.makeText(this, "Player1 " + TotalCorrect1 + " " + "Player2 " + TotalCorrect2, Toast.LENGTH_SHORT).show();
+            String i= Integer.toString(TotalCorrect1);
+            String j= Integer.toString(TotalCorrect2);
+            String type = "challenge";
+            Bundle bundle = new Bundle();
+            bundle.putString("result1", i);
+            bundle.putString("result2", j);
+            bundle.putString("layout", type);
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtras(bundle);
+            startActivityForResult(intent, REQUEST_RESULT);
+            finish();
+        }
     }
 }
