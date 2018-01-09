@@ -16,7 +16,6 @@ import javax.xml.transform.Result;
 
 public class PracticeActivity extends AppCompatActivity {
 
-    private static final int REQUEST_MAIN_MENU = 1;
     private static final int REQUEST_RESULT = 1;
 
     public TextView textViewNum;
