@@ -90,7 +90,7 @@ public class PracticeActivity extends AppCompatActivity {
             ans = num1 * num2;
         }
         else if(operation.equals("DIV")||(operation.equals("MIX")&&mix==4)){
-            textViewQuestion.setText(num1 + "/" + num2 + " = ?");
+            textViewQuestion.setText(num1 + "÷" + num2 + " = ?");
             ans = num1 / num2;
         }
         DecimalFormat decimalFormat = new DecimalFormat("#.##");

@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PROFILE_UPDATE = 1;
     private static final int REQUEST_SELECT_MODE = 1;
     private static final int REQUEST_CHALLENGE = 1;
+    private static final int REQUEST_HISTORY = 1;
 
 
     @Override
@@ -31,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
     public void Challenge(View view){
         Intent intent = new Intent(this,ChallengeActivity.class);
         startActivityForResult(intent, REQUEST_CHALLENGE);
+    }
+
+    public void History(View view){
+        Intent intent = new Intent(this,HistoryActivity.class);
+        startActivityForResult(intent, REQUEST_HISTORY);
     }
 
     @Override

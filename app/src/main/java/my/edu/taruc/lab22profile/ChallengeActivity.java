@@ -15,8 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
-
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 public class ChallengeActivity extends AppCompatActivity {
@@ -45,8 +49,13 @@ public class ChallengeActivity extends AppCompatActivity {
     public int TotalCorrect2=0;
     public boolean givenAns;
     public boolean haveanswer1 =false, haveanswer2 =false;
+    String comment2 = " ";
+    String comment3 = " ";
+    Set<String> commentset;
+
 
     public CountDownTimer counttimer;
+    public CountDownTimer pausetime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +65,18 @@ public class ChallengeActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = getSharedPreferences("ChallengeScore", Context.MODE_PRIVATE);
 
+        if(sharedPref!=null) {
+            comment2 = sharedPref.getString("score5", "");
+            comment3 = sharedPref.getString("score6", "");
+        }
+
+        //commentset = sharedPref.getStringSet("score4", commentset);
+        //if(commentset.toArray()[0].toString()!=null) {
+        //    comment2 = commentset.toArray()[0].toString();
+        //}
+        //if(commentset.toArray()[1].toString()!=null) {
+        //    comment3 = commentset.toArray()[1].toString();
+        //}
 
         player1layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer1);
         player2layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer2);
@@ -63,7 +84,7 @@ public class ChallengeActivity extends AppCompatActivity {
         textViewNums = (TextView)findViewById(R.id.textViewNums);
         textViewQuestions = (TextView)findViewById(R.id.textViewQuestions);
         textViewTimer = (TextView)findViewById(R.id.textViewTimer);
-        textViewNums.setText("Question " + countNum + "/12");
+        textViewNums.setText(countNum + "/12");
         CreateQuestions();
     }
 
@@ -105,29 +126,29 @@ public class ChallengeActivity extends AppCompatActivity {
     }
 
     public void checkAnss(View view){
-        if(haveanswer1 ==false){
+        if(!haveanswer1){
             if (view.getId() == R.id.imageButtonTrue1){
-                if(givenAns == true) {
+                if(givenAns) {
                     TotalCorrect1++;
                 }
                 haveanswer1 =true;
             }
             else if (view.getId() == R.id.imageButtonFalse1){
-                if(givenAns == false) {
+                if(!givenAns) {
                     TotalCorrect1++;
                 }
                 haveanswer1 =true;
             }
         }
-        if(haveanswer2 ==false){
+        if(!haveanswer2){
             if (view.getId() == R.id.imageButtonTrue2){
-                if(givenAns == true) {
+                if(givenAns) {
                     TotalCorrect2++;
                 }
                 haveanswer2 = true;
             }
             else if (view.getId() == R.id.imageButtonFalse2) {
-                if (givenAns == false) {
+                if (!givenAns) {
                     TotalCorrect2++;
                 }
                 haveanswer2 = true;
@@ -142,19 +163,19 @@ public class ChallengeActivity extends AppCompatActivity {
 
         if(mix==1){
             ans = num1 + num2;
-            textViewQuestions.setText(num1 + "+" + num2 + " = ");
+            textViewQuestions.setText((int)num1 + "+" + (int)num2 + " = ");
         }
         else if(mix==2){
             ans = num1 - num2;
-            textViewQuestions.setText(num1 + "-" + num2 + " = ");
+            textViewQuestions.setText((int)num1 + "-" + (int)num2 + " = ");
         }
         else if(mix==3){
             ans = num1 * num2;
-            textViewQuestions.setText(num1 + "X" + num2 + " = ");
+            textViewQuestions.setText((int)num1 + "X" + (int)num2 + " = ");
         }
         else if(mix==4){
             ans = num1 / num2;
-            textViewQuestions.setText(num1 + "/" + num2 + " = ");
+            textViewQuestions.setText((int)num1 + "÷" + (int)num2 + " = ");
         }
         if(answer==0){
             givenAns=true;
@@ -162,6 +183,14 @@ public class ChallengeActivity extends AppCompatActivity {
         else if(answer==1){
             ans = randomAnss((int)ans-10,(int)ans+10);
             givenAns=false;
+        }
+        if(Math.round(ans)!=ans){
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            ans = Float.valueOf(decimalFormat.format(ans));
+        }
+        else
+        {
+            ans = (int)ans;
         }
         textViewQuestions.setText(textViewQuestions.getText()+""+ans);
         //DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -172,6 +201,14 @@ public class ChallengeActivity extends AppCompatActivity {
     public float randomAnss(int min,int max){
         Random r = new Random();
         float randans = r.nextInt(max - min + 1) + min;
+        if(Math.round(randans)!=randans){
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            randans = Float.valueOf(decimalFormat.format(randans));
+        }
+        else
+        {
+            randans = (int)randans;
+        }
         return randans;
     }
 
@@ -185,9 +222,16 @@ public class ChallengeActivity extends AppCompatActivity {
         if(countNum<12){
             if(haveanswer1 ==true&& haveanswer2 ==true) {
                 counttimer.cancel();
-                countNum++;
-                textViewNums.setText("" + countNum + "/12");
-                CreateQuestions();
+                pausetime = new CountDownTimer(1000, 500){
+                    public void onTick(long millisUntilFinished){
+                    }
+                    public void onFinish(){
+                        countNum++;
+                        textViewNums.setText(countNum + "/12");
+                        CreateQuestions();
+                    }
+                };
+                pausetime.start();
             }
         }
         else if(countNum >= 12&& haveanswer1 ==true&& haveanswer2 ==true){
@@ -198,9 +242,10 @@ public class ChallengeActivity extends AppCompatActivity {
             SharedPreferences sharedPref = getSharedPreferences("ChallengeScore", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
 
-            editor.putInt("score1", TotalCorrect1);
-            editor.putInt("score2", TotalCorrect2);
-            editor.apply();
+            //String[] SET_VALUES = new String[] {Integer.toString(TotalCorrect1),Integer.toString(TotalCorrect2)};
+            //Set<String> MY_SET = new HashSet<>(Arrays.asList(SET_VALUES));
+
+            //editor.putStringSet("score3",MY_SET);
 
             if(TotalCorrect1 > TotalCorrect2)
             {
@@ -214,6 +259,16 @@ public class ChallengeActivity extends AppCompatActivity {
             {
                 comment = "Draw";
             }
+
+            //String[] SET_HISTORY = new String[] {comment,comment2,comment3};
+            //Set<String> VS_SET = new HashSet<>(Arrays.asList(SET_HISTORY));
+            //editor.putStringSet("score4",VS_SET);
+
+            editor.putString("score1",comment);
+            editor.putString("score2",comment2);
+            editor.putString("score3",comment3);
+
+            editor.apply();
 
             String i= Integer.toString(TotalCorrect1);
             String j= Integer.toString(TotalCorrect2);

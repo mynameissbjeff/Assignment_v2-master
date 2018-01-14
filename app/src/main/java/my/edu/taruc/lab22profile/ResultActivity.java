@@ -114,7 +114,7 @@ public class ResultActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                                 }else{
                                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-                                    finish();
+                                    //finish();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

@@ -94,4 +94,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="78dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/lightgreen"
+        android:onClick="History"
+        android:text="@string/history"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Material.Small"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textViewTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonMultiplayer"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
