@@ -1,6 +1,8 @@
 package my.edu.taruc.lab22profile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,11 +31,18 @@ public class PracticeActivity extends AppCompatActivity {
     public float selectAns;
     public int TotalCorrect = 0;
 
+    public int prevScore = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_practice);
+
+        SharedPreferences sharedPref = getSharedPreferences("userScore", Context.MODE_PRIVATE);
+
+        prevScore = sharedPref.getInt("score", 0);
+
 
         textViewNum = (TextView)findViewById(R.id.textViewNum);
         textViewQuestion = (TextView)findViewById(R.id.textViewQuestion);
@@ -126,11 +135,30 @@ public class PracticeActivity extends AppCompatActivity {
             CreateQuestion();
         }
         else if(countNum >= 12){
+            String comment;
+
+            SharedPreferences sharedPref = getSharedPreferences("userScore", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            editor.putInt("score", TotalCorrect);
+            editor.apply();
+
+            if(TotalCorrect >= prevScore)
+            {
+                comment = "Congratulations!! YOU BEAT YOUR HIGH SCORE!!";
+            }
+            else
+            {
+                comment = "Don't Give Up! Try to beat your high score next time!";
+            }
+
             String i= Integer.toString(TotalCorrect);
             String type = "practice";
             Bundle bundle = new Bundle();
             bundle.putString("result", i);
             bundle.putString("layout", type);
+            bundle.putString("comment", comment);
+
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putExtras(bundle);
             startActivityForResult(intent, REQUEST_RESULT);

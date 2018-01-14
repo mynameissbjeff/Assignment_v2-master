@@ -1,6 +1,8 @@
 package my.edu.taruc.lab22profile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -51,6 +53,9 @@ public class ChallengeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_challenge);
+
+        SharedPreferences sharedPref = getSharedPreferences("ChallengeScore", Context.MODE_PRIVATE);
+
 
         player1layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer1);
         player2layout = (LinearLayout)findViewById(R.id.linearLayoutPlayer2);
@@ -187,7 +192,29 @@ public class ChallengeActivity extends AppCompatActivity {
         }
         else if(countNum >= 12&& haveanswer1 ==true&& haveanswer2 ==true){
             counttimer.cancel();
-            //Toast.makeText(this, "Player1 " + TotalCorrect1 + " " + "Player2 " + TotalCorrect2, Toast.LENGTH_SHORT).show();
+
+            String comment;
+
+            SharedPreferences sharedPref = getSharedPreferences("ChallengeScore", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            editor.putInt("score1", TotalCorrect1);
+            editor.putInt("score2", TotalCorrect2);
+            editor.apply();
+
+            if(TotalCorrect1 > TotalCorrect2)
+            {
+                comment = "Player 1 Beat Player 2";
+            }
+            else if(TotalCorrect1 < TotalCorrect2)
+            {
+                comment = "Player 2 Beat Player 1";
+            }
+            else
+            {
+                comment = "Draw";
+            }
+
             String i= Integer.toString(TotalCorrect1);
             String j= Integer.toString(TotalCorrect2);
             String type = "challenge";
@@ -195,6 +222,9 @@ public class ChallengeActivity extends AppCompatActivity {
             bundle.putString("result1", i);
             bundle.putString("result2", j);
             bundle.putString("layout", type);
+
+            bundle.putString("comment2", comment);
+
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putExtras(bundle);
             startActivityForResult(intent, REQUEST_RESULT);

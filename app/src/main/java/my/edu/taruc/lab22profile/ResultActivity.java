@@ -30,8 +30,10 @@ public class ResultActivity extends AppCompatActivity {
     public TextView textViewResult;
     public TextView textViewPlayer1Result;
     public TextView textViewPlayer2Result;
+    public TextView textViewComment;
     public Button buttonOk;
-    String result,player1,player2;
+    String result,player1,player2, comment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class ResultActivity extends AppCompatActivity {
         if(result.equals("practice")){
             setContentView(R.layout.activity_result);
             textViewResult = (TextView)findViewById(R.id.textViewResult);
+            textViewComment = (TextView) findViewById(R.id.textViewComment);
             getResult1();
             saveRecord();
         }
@@ -49,6 +52,7 @@ public class ResultActivity extends AppCompatActivity {
             setContentView(R.layout.activity_result2);
             textViewPlayer1Result = (TextView)findViewById(R.id.textViewPlayer1Result);
             textViewPlayer2Result = (TextView)findViewById(R.id.textViewPlayer2Result);
+            textViewComment = (TextView) findViewById(R.id.textViewComment2);
             getResult2();
         }
         buttonOk = (Button)findViewById(R.id.buttonOk);
@@ -74,15 +78,19 @@ public class ResultActivity extends AppCompatActivity {
     void getResult1(){
         Bundle bundle = getIntent().getExtras();
         result= bundle.getString("result");
+        comment = bundle.getString("comment");
         textViewResult.setText(result + " / 12");
+        textViewComment.setText(comment);
     }
 
     void getResult2(){
         Bundle bundle = getIntent().getExtras();
         player1= bundle.getString("result1");
         player2= bundle.getString("result2");
+        comment = bundle.getString("comment2");
         textViewPlayer1Result.setText(player1 + " / 12");
         textViewPlayer2Result.setText(player2 + " / 12");
+        textViewComment.setText(comment);
     }
 
     public void makeServiceCall(Context context, String url, final Score score) {
